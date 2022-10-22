@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Tiny Survey</title>
+</head>
+</head>
+
+<body>
+  <h1>&#10068; Tiny Survey Results</h1>
+  <h2>
+    <%=topicName%>
+  </h2>
+  <% options.forEach(option=> { %>
+    <p>
+      <%= option.optionText%> : <%= option.count %>
+    </p>
+    <% }) %>
+      <p>
+        <button onclick="window.location.href='/displayresults/<%=topicName%>'"> Reload </button>
+      </p>
+      </form>
+      <p>
+        Click Reload to update the counts.
+      </p>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Tiny Survey Select Option</title>
+</head>
+
+<body>
+  <h1>&#10068; Tiny Survey</h1>
+  <h2>
+    <%=topicName%>
+  </h2>
+  <form action="/recordselection/<%=topicName%>" method="POST">
+    <% options.forEach(option=> { %>
+      <p>
+        <input type="radio" name="selections" 
+         id="<%=option.optionName%>" value="<%=option.optionName%>">
+        <label for="<%option.optionName%>">
+          <%=option.optionText%>
+        </label>
+      </p>
+      <% }) %>
+        <p>
+          <button type="submit">Send</button>
+        </p>
+  </form>
+  <p>
+    Select the best one and click Send
+  </p>
+</body>
+
+</html>

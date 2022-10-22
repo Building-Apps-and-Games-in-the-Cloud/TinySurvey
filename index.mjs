@@ -1,8 +1,11 @@
-import { saveSurvey, findSurvey, findOption } from './surveystore.mjs';
+import { Option, Survey, Surveys } from './surveystore.mjs';
 import express from 'express';
 
 // Create the express application
 const app = express();
+
+// Create an empty survey store
+let surveys = new Surveys();
 
 const port = 8080;
 
@@ -13,7 +16,7 @@ app.set('view-engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 
 // Home page
-app.get('/', (request, response) => {
+app.get('/index.html', (request, response) => {
   response.render('index.ejs');
 });
 
@@ -21,15 +24,16 @@ app.get('/', (request, response) => {
 app.post('/gottopic', (request, response) => {
   let surveyTopic = request.body.topic;
 
-  let survey = findSurvey(surveyTopic);
+  let survey = surveys.findSurvey(surveyTopic);
   if (survey == undefined) {
     // need to make a new survey
-    response.render('build.ejs',
+    response.render('enteroptions.ejs',
       { topicName: request.body.topic, numberOfOptions: 5 });
   }
   else {
     // enter scores on an existing survey
-    response.render('entry.ejs', survey);
+    let surveyOptions = survey.getOptions();
+    response.render('selectoption.ejs', surveyOptions);
   }
 });
 
@@ -47,8 +51,8 @@ app.post('/setoptions/:topicname', (request, response) => {
     if (optionText == undefined) {
       break;
     }
-    // Make an option object
-    let option = { optionName: optionName, optionText: optionText, count: 0 };
+    // Make an option object 
+    let option = new Option({ optionName: optionName, optionText: optionText });
     // Store it in the array of options
     options.push(option);
     // Move on to the next option
@@ -56,39 +60,41 @@ app.post('/setoptions/:topicname', (request, response) => {
   } while (true);
 
   // Build a survey object
-  let survey = { topicName: topicName, options: options };
+  let survey = new Survey({ topicName: topicName, options: options });
 
   // save it
-  saveSurvey(survey);
+  surveys.saveSurvey(survey);
 
   // Render the survey page
-  response.render('entry.ejs', survey);
+  let surveyOptions = survey.getOptions();
+  response.render('selectoption.ejs', surveyOptions);
 });
 
 // Got the selections for a survey
 app.post('/recordselection/:topicname', (request, response) => {
   let topicName = request.params.topicname;
-  let survey = findSurvey(topicName);
+  let survey = surveys.findSurvey(topicName);
   if (survey == undefined) {
     response.status(404).send('<h1>Survey not found</h1>');
   }
   else {
     let optionSelected = request.body.selections;
-    let option = findOption(survey, optionSelected);
-    option.count++;
-    response.render('results.ejs', survey);
+    survey.incrementCount(optionSelected);
+    let results = survey.getCounts();
+    response.render('displayresults.ejs', results);
   }
 });
 
 // Get the results for a survey
-app.get('/getresults/:topicname', (request, response) => {
+app.get('/displayresults/:topicname', (request, response) => {
   let topicName = request.params.topicname;
-  let survey = findSurvey(topicName);
+  let survey = surveys.findSurvey(topicName);
   if (survey == undefined) {
     response.status(404).send('<h1>Survey not found</h1>');
   }
   else {
-    response.render('results.ejs', survey);
+    let results = survey.getCounts();
+    response.render('displayresults.ejs', results);
   }
 });
 

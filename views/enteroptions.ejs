@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Tiny Survey</title>
+</head>
+
+<body>
+  <h1>&#10068; Tiny Survey Enter Options</h1>
+  <h2>
+    <%= topicName %>
+  </h2>
+  <form action="/setoptions/<%=topicName%>" method="POST">
+    <% for(let i=1;i<=numberOfOptions;i++) { %>
+      <p>
+        <input type="text" required spellcheck="false" value="" name="option<%=i %>">
+      </p>
+      <% } %>
+        <p>
+          <button type="submit">Start</button>
+        </p>
+  </form>
+  <p>
+    Enter your options and press Start to go live.
+  </p>
+</body>
+
+</html>
