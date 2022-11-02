@@ -24,11 +24,11 @@ app.get('/index.html', (request, response) => {
 app.post('/gottopic', (request, response) => {
   let surveyTopic = request.body.topic;
 
-  let survey = surveys.findSurvey(surveyTopic);
+  let survey = surveys.getSurveyByTopic(surveyTopic);
   if (survey == undefined) {
     // need to make a new survey
     response.render('enteroptions.ejs',
-      { topicName: request.body.topic, numberOfOptions: 5 });
+      { topic: request.body.topic, numberOfOptions: 5 });
   }
   else {
     // enter scores on an existing survey
@@ -38,8 +38,8 @@ app.post('/gottopic', (request, response) => {
 });
 
 // Got the options for a new survey
-app.post('/setoptions/:topicname', (request, response) => {
-  let topicName = request.params.topicname;
+app.post('/setoptions/:topic', (request, response) => {
+  let topic = request.params.topic;
   let options = [];
   let optionNo = 1;
   do {
@@ -52,7 +52,7 @@ app.post('/setoptions/:topicname', (request, response) => {
       break;
     }
     // Make an option object 
-    let option = new Option({ optionName: optionName, optionText: optionText });
+    let option = new Option({ text: optionText,count:0 });
     // Store it in the array of options
     options.push(option);
     // Move on to the next option
@@ -60,7 +60,7 @@ app.post('/setoptions/:topicname', (request, response) => {
   } while (true);
 
   // Build a survey object
-  let survey = new Survey({ topicName: topicName, options: options });
+  let survey = new Survey({ topic: topic, options: options });
 
   // save it
   surveys.saveSurvey(survey);
@@ -71,9 +71,9 @@ app.post('/setoptions/:topicname', (request, response) => {
 });
 
 // Got the selections for a survey
-app.post('/recordselection/:topicname', (request, response) => {
-  let topicName = request.params.topicname;
-  let survey = surveys.findSurvey(topicName);
+app.post('/recordselection/:topic', (request, response) => {
+  let topic = request.params.topic;
+  let survey = surveys.getSurveyByTopic(topic);
   if (survey == undefined) {
     response.status(404).send('<h1>Survey not found</h1>');
   }
@@ -86,9 +86,9 @@ app.post('/recordselection/:topicname', (request, response) => {
 });
 
 // Get the results for a survey
-app.get('/displayresults/:topicname', (request, response) => {
-  let topicName = request.params.topicname;
-  let survey = surveys.findSurvey(topicName);
+app.get('/displayresults/:topic', (request, response) => {
+  let topic = request.params.topic;
+  let survey = surveys.getSurveyByTopic(topic);
   if (survey == undefined) {
     response.status(404).send('<h1>Survey not found</h1>');
   }

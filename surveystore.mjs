@@ -1,8 +1,7 @@
 class Option {
   constructor(newValue) {
-    this.optionName = newValue.optionName;
-    this.optionText = newValue.optionText;
-    this.count = 0;
+    this.text = newValue.text;
+    this.count = newValue.count;
   }
 
   incrementCount() {
@@ -16,17 +15,17 @@ class Option {
 
 class Survey {
   constructor(newValue) {
-    this.topicName = newValue.topicName; 
-    this.options = []; 
-    newValue.options.forEach(optionDetails => { 
-      let newOption = new Option(optionDetails);
+    this.topic = newValue.topic;
+    this.options = [];
+    newValue.options.forEach(optionValues => {
+      let newOption = new Option(optionValues);
       this.options.push(newOption);
     });
   }
-  
-  incrementCount(optionName) {
+
+  incrementCount(text) {
     let option = this.options.find(
-      item => item.optionName == optionName);;
+      item => item.text == text);
     if (option != undefined) {
       option.incrementCount();
     }
@@ -35,20 +34,20 @@ class Survey {
   getCounts() {
     let options = [];
     this.options.forEach(option => {
-      let countInfo = { optionText: option.optionText, count: option.getCount() };
+      let countInfo = { text: option.text, count: option.getCount() };
       options.push(countInfo);
     });
-    let result = { topicName: this.topicName, options: options };
+    let result = { topic: this.topic, options: options };
     return result;
   }
 
   getOptions() {
     let options = [];
     this.options.forEach(option => {
-      let optionInfo = { optionText: option.optionText, optionName: option.optionName };
+      let optionInfo = { text: option.text };
       options.push(optionInfo);
     });
-    let result = { topicName: this.topicName, options: options };
+    let result = { topic: this.topic, options: options };
     return result;
   }
 }
@@ -62,8 +61,8 @@ class Surveys {
     this.surveys.push(survey);
   }
 
-  findSurvey(topicName) {
-    return this.surveys.find(element => element.topicName == topicName);
+  getSurveyByTopic(topic) {
+    return this.surveys.find(element => element.topic == topic);
   }
 }
 
