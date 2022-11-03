@@ -28,7 +28,7 @@ app.post('/gottopic', (request, response) => {
   if (survey == undefined) {
     // need to make a new survey
     response.render('enteroptions.ejs',
-      { topic: request.body.topic, numberOfOptions: 5 });
+      { topic: surveyTopic, numberOfOptions: 5 });
   }
   else {
     // enter scores on an existing survey
